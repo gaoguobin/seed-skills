@@ -1,0 +1,84 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON
+        run: |
+          jq empty \
+            .claude-plugin/plugin.json \
+            .codex-plugin/plugin.json \
+            .cursor-plugin/plugin.json \
+            gemini-extension.json \
+            package.json
+
+      - name: Validate skill frontmatter
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("skills/seed/SKILL.md")
+          text = path.read_text(encoding="utf-8")
+          if not text.startswith("---\n"):
+              raise SystemExit("SKILL.md must start with YAML frontmatter")
+          parts = text.split("---\n", 2)
+          if len(parts) < 3:
+              raise SystemExit("SKILL.md frontmatter is not closed")
+          keys = [
+              line.split(":", 1)[0].strip()
+              for line in parts[1].splitlines()
+              if line.strip()
+          ]
+          if keys != ["name", "description"]:
+              raise SystemExit(f"frontmatter keys must be name, description; got {keys}")
+          PY
+
+      - name: Check scripts
+        run: |
+          node --check .opencode/plugins/seed.js
+          node --check skills/seed/scripts/server.cjs
+          node --check skills/seed/scripts/helper.js
+          bash -n skills/seed/scripts/start-server.sh
+          bash -n skills/seed/scripts/stop-server.sh
+
+      - name: Check legacy chain residue
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          patterns = [
+              "writing" + "-plans",
+              "executing" + "-plans",
+              "subagent" + "-driven" + "-development",
+              "docs/" + "super" + "powers",
+              "skills/" + "brain" + "storming",
+              "sp" + "ark",
+              "BRAIN" + "STORM",
+              "." + "super" + "powers",
+              "/tmp/" + "brain" + "storm",
+              "Super" + "powers " + "Brain" + "storming",
+          ]
+          skip = {Path(".github/workflows/validate.yml")}
+          hits = []
+
+          for path in Path(".").rglob("*"):
+              if path in skip or ".git" in path.parts or not path.is_file():
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+              for pattern in patterns:
+                  if pattern in text:
+                      hits.append(f"{path}: contains {pattern}")
+
+          if hits:
+              raise SystemExit("\n".join(hits))
+          PY

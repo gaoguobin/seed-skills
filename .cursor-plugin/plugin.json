@@ -1,0 +1,20 @@
+{
+  "name": "seed",
+  "displayName": "Seed",
+  "description": "Standalone idea-shaping skill that turns rough concepts into reviewed specs and stops before implementation.",
+  "version": "0.1.0",
+  "author": {
+    "name": "gaoguobin"
+  },
+  "homepage": "https://github.com/gaoguobin/seed-skills",
+  "repository": "https://github.com/gaoguobin/seed-skills",
+  "license": "MIT",
+  "keywords": [
+    "brainstorming",
+    "requirements",
+    "specs",
+    "planning",
+    "skills"
+  ],
+  "skills": "./skills/"
+}

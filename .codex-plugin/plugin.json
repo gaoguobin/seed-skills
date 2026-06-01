@@ -1,0 +1,36 @@
+{
+  "name": "seed",
+  "version": "0.1.0",
+  "description": "Standalone idea-shaping skill that turns rough concepts into reviewed specs and stops before implementation.",
+  "author": {
+    "name": "gaoguobin"
+  },
+  "homepage": "https://github.com/gaoguobin/seed-skills",
+  "repository": "https://github.com/gaoguobin/seed-skills",
+  "license": "MIT",
+  "keywords": [
+    "brainstorming",
+    "requirements",
+    "specs",
+    "planning",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Seed",
+    "shortDescription": "Shape vague ideas into reviewed specs, then stop",
+    "longDescription": "Use Seed to clarify intent, compare approaches, write a spec to docs/seed/, review it with the user, and stop before implementation planning or code.",
+    "developerName": "gaoguobin",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "I have an idea I want to think through first.",
+      "Help me turn this rough feature idea into a spec."
+    ],
+    "websiteURL": "https://github.com/gaoguobin/seed-skills"
+  }
+}
