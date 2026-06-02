@@ -1,6 +1,6 @@
 ---
 name: seed
-description: "Use when the user wants to brainstorm, discuss, clarify, shape, or explore an idea before implementation; when Chinese prompts mention 头脑风暴、讨论、聊聊、梳理想法、需求澄清、方案设计、先想清楚、先别写代码; or when a vague feature request should become a clear written spec."
+description: "Use when the user wants to brainstorm, workshop, discuss, clarify requirements, analyze needs, shape a feature, explore approaches, compare options, or turn a vague idea into a spec/PRD/design doc before implementation; when prompts mention brainstorm, think through, requirements analysis, solution design, approach comparison, write a spec, draft a PRD, product plan, technical design, before coding, no code yet; when Chinese prompts mention 头脑风暴、讨论、聊聊、梳理想法、需求澄清、需求分析、方案设计、设计方案、方案讨论、方案对比、技术方案、产品方案、写 spec、写 PRD、整理成 PRD、整理成需求文档、先想清楚、先讨论、先不实现、先别写代码; stop after delivering a written spec."
 ---
 
 # Seed Ideas Into Specs
