@@ -43,7 +43,7 @@ If the user pinned a release tag in `opencode.json`, update that tag manually:
 
 ```json
 {
-  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.1"]
+  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.2"]
 }
 ```
 

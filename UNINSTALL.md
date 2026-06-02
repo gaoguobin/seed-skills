@@ -69,7 +69,7 @@ If `opencode.json` contains other plugins, remove only the Seed entry:
 Also remove any pinned Seed entry such as:
 
 ```json
-"seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.1"
+"seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.2"
 ```
 
 ## Advanced CLI Uninstall
