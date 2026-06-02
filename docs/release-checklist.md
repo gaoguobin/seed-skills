@@ -11,6 +11,7 @@ Use this before tagging or publishing a Seed release.
 - [ ] `node --check skills/seed/scripts/helper.js`
 - [ ] `bash -n skills/seed/scripts/start-server.sh`
 - [ ] `bash -n skills/seed/scripts/stop-server.sh`
+- [ ] PowerShell parser check passes for `skills/seed/scripts/start-server.ps1` and `skills/seed/scripts/stop-server.ps1`
 - [ ] legacy-chain residue search is clean
 - [ ] byte-level legacy-name scan is clean, with only README provenance allowed
 

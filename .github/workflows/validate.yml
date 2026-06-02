@@ -47,6 +47,21 @@ jobs:
           node --check skills/seed/scripts/helper.js
           bash -n skills/seed/scripts/start-server.sh
           bash -n skills/seed/scripts/stop-server.sh
+          pwsh -NoProfile -Command '
+            $paths = @(
+              "skills/seed/scripts/start-server.ps1",
+              "skills/seed/scripts/stop-server.ps1"
+            )
+            foreach ($path in $paths) {
+              $tokens = $null
+              $errors = $null
+              $null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
+              if ($errors.Count -gt 0) {
+                $errors | ForEach-Object { Write-Error $_ }
+                exit 1
+              }
+            }
+          '
 
       - name: Check legacy chain residue
         run: |

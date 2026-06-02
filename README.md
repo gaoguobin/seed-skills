@@ -86,14 +86,17 @@ skills/seed/visual-companion.md
 skills/seed/spec-document-reviewer-prompt.md
 skills/seed/scripts/server.cjs
 skills/seed/scripts/start-server.sh
+skills/seed/scripts/start-server.ps1
 skills/seed/scripts/stop-server.sh
+skills/seed/scripts/stop-server.ps1
 skills/seed/scripts/helper.js
 skills/seed/scripts/frame-template.html
 ```
 
 The visual companion is retained for discussions that benefit from mockups,
 diagrams, or visual comparisons. Its project-local session files live under
-`.seed/visual/`.
+`.seed/visual/`. POSIX shells use `start-server.sh` / `stop-server.sh`;
+native Windows PowerShell uses `start-server.ps1` / `stop-server.ps1`.
 
 ## Provenance
 

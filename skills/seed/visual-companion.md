@@ -32,6 +32,16 @@ The server watches a directory for HTML files and serves the newest one to the b
 
 ## Starting a Session
 
+Choose the launcher from the agent's current command environment:
+
+- POSIX shell on macOS, Linux, WSL, or Git Bash: use `scripts/start-server.sh`
+- Native Windows PowerShell: use `scripts/start-server.ps1`
+- Unknown environment: start with the current shell's launcher; if it fails because the shell, path, or background process model is unsupported, retry with the other launcher when available
+
+Do not probe for Git Bash by scanning install paths. Follow the current tool shell and use fallback only after a launcher failure.
+
+**POSIX shell:**
+
 ```bash
 # Start server with persistence (mockups saved to project)
 scripts/start-server.sh --project-dir /path/to/project
@@ -41,34 +51,50 @@ scripts/start-server.sh --project-dir /path/to/project
 #           "state_dir":"/path/to/project/.seed/visual/12345-1706000000/state"}
 ```
 
+**Windows PowerShell:**
+
+```powershell
+# Start server with persistence (mockups saved to project)
+.\scripts\start-server.ps1 -ProjectDir C:\path\to\project
+
+# Returns: {"type":"server-started","port":52341,"url":"http://localhost:52341",
+#           "screen_dir":"C:\\path\\to\\project\\.seed\\visual\\12345-1706000000\\content",
+#           "state_dir":"C:\\path\\to\\project\\.seed\\visual\\12345-1706000000\\state"}
+```
+
+If direct script execution is blocked by policy, invoke the same file with a process-scoped bypass, for example: `pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-server.ps1 -ProjectDir C:\path\to\project`.
+
 Save `screen_dir` and `state_dir` from the response. Tell user to open the URL.
 
-**Finding connection info:** The server writes its startup JSON to `$STATE_DIR/server-info`. If you launched the server in the background and didn't capture stdout, read that file to get the URL and port. When using `--project-dir`, check `<project>/.seed/visual/` for the session directory.
+**Finding connection info:** The server writes its startup JSON to `state_dir/server-info`. If you launched the server in the background and didn't capture stdout, read that file to get the URL and port. When using `--project-dir` / `-ProjectDir`, check `<project>/.seed/visual/` for the session directory.
 
-**Note:** Pass the project root as `--project-dir` so mockups persist in `.seed/visual/` and survive server restarts. Without it, files go to `/tmp` and get cleaned up. Remind the user to add `.seed/` to `.gitignore` if it's not already there.
+**Note:** Pass the project root as `--project-dir` / `-ProjectDir` so mockups persist in `.seed/visual/` and survive server restarts. Without it, files go to the OS temp directory and get cleaned up. Remind the user to add `.seed/` to `.gitignore` if it's not already there.
 
 **Launching the server by platform:**
 
-**Claude Code (macOS / Linux):**
+**Claude Code (macOS / Linux / WSL / Git Bash):**
 ```bash
 # Default mode works — the script backgrounds the server itself
 scripts/start-server.sh --project-dir /path/to/project
 ```
 
-**Claude Code (Windows):**
-```bash
-# Windows auto-detects and uses foreground mode, which blocks the tool call.
-# Use run_in_background: true on the Bash tool call so the server survives
-# across conversation turns.
-scripts/start-server.sh --project-dir /path/to/project
+**Claude Code (Windows PowerShell):**
+```powershell
+# Use the native PowerShell launcher when the current tool shell is PowerShell.
+.\scripts\start-server.ps1 -ProjectDir C:\path\to\project
 ```
-When calling this via the Bash tool, set `run_in_background: true`. Then read `$STATE_DIR/server-info` on the next turn to get the URL and port.
+If your environment reaps detached processes, add `-Foreground` and launch the tool call in the agent's background mode. Then read `server-info` under the returned `state_dir` on the next turn to get the URL and port.
 
 **Codex:**
 ```bash
-# Codex reaps background processes. The script auto-detects CODEX_CI and
-# switches to foreground mode. Run it normally — no extra flags needed.
+# POSIX shell path. The script auto-detects CODEX_CI and switches to
+# foreground mode when Codex reaps background processes.
 scripts/start-server.sh --project-dir /path/to/project
+```
+
+```powershell
+# PowerShell path for native Windows Codex sessions.
+.\scripts\start-server.ps1 -ProjectDir C:\path\to\project
 ```
 
 **Gemini CLI:**
@@ -78,7 +104,7 @@ scripts/start-server.sh --project-dir /path/to/project
 scripts/start-server.sh --project-dir /path/to/project --foreground
 ```
 
-**Other environments:** The server must keep running in the background across conversation turns. If your environment reaps detached processes, use `--foreground` and launch the command with your platform's background execution mechanism.
+**Other environments:** The server must keep running in the background across conversation turns. If your environment reaps detached processes, use `--foreground` / `-Foreground` and launch the command with your platform's background execution mechanism.
 
 If the URL is unreachable from your browser (common in remote/containerized setups), bind a non-loopback host:
 
@@ -89,12 +115,19 @@ scripts/start-server.sh \
   --url-host localhost
 ```
 
-Use `--url-host` to control what hostname is printed in the returned URL JSON.
+```powershell
+.\scripts\start-server.ps1 `
+  -ProjectDir C:\path\to\project `
+  -Host 0.0.0.0 `
+  -UrlHost localhost
+```
+
+Use `--url-host` / `-UrlHost` to control what hostname is printed in the returned URL JSON.
 
 ## The Loop
 
 1. **Check server is alive**, then **write HTML** to a new file in `screen_dir`:
-   - Before each write, check that `$STATE_DIR/server-info` exists. If it doesn't (or `$STATE_DIR/server-stopped` exists), the server has shut down — restart it with `start-server.sh` before continuing. The server auto-exits after 30 minutes of inactivity.
+   - Before each write, check that `state_dir/server-info` exists. If it doesn't (or `state_dir/server-stopped` exists), the server has shut down — restart it with the matching launcher before continuing. The server auto-exits after 30 minutes of inactivity.
    - Use semantic filenames: `platform.html`, `visual-style.html`, `layout.html`
    - **Never reuse filenames** — each screen gets a fresh file
    - Use Write tool — **never use cat/heredoc** (dumps noise into terminal)
@@ -279,7 +312,11 @@ If `$STATE_DIR/events` doesn't exist, the user didn't interact with the browser 
 scripts/stop-server.sh $SESSION_DIR
 ```
 
-If the session used `--project-dir`, mockup files persist in `.seed/visual/` for later reference. Only `/tmp` sessions get deleted on stop.
+```powershell
+.\scripts\stop-server.ps1 $SessionDir
+```
+
+If the session used `--project-dir` / `-ProjectDir`, mockup files persist in `.seed/visual/` for later reference. Only OS temp directory sessions get deleted on stop.
 
 ## Reference
 
