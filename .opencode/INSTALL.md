@@ -32,6 +32,6 @@ To pin a specific release:
 
 ```json
 {
-  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.2"]
+  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.3"]
 }
 ```

@@ -8,25 +8,45 @@ installed.
 Remove the skill link:
 
 ```bash
-rm ~/.agents/skills/seed
+rm -f "${CODEX_HOME:-$HOME/.codex}/skills/seed"
 ```
 
 Optionally delete the clone:
 
 ```bash
-rm -rf ~/.codex/seed-skills
+rm -rf "${CODEX_HOME:-$HOME/.codex}/seed-skills"
+```
+
+If you installed Seed from v0.1.2, also remove the legacy link if it exists:
+
+```bash
+[ ! -e "$HOME/.agents/skills/seed" ] || rm -f "$HOME/.agents/skills/seed"
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-cmd /c rmdir "$env:USERPROFILE\.agents\skills\seed"
+$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+$linkPath = Join-Path $codexHome "skills\seed"
+if (Test-Path -LiteralPath $linkPath) {
+  cmd /c rmdir "$linkPath"
+}
 ```
 
 Optionally delete the clone:
 
 ```powershell
-Remove-Item -Recurse -Force "$env:USERPROFILE\.codex\seed-skills"
+$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+Remove-Item -Recurse -Force (Join-Path $codexHome "seed-skills")
+```
+
+If you installed Seed from v0.1.2, also remove the legacy link if it exists:
+
+```powershell
+$legacyLink = Join-Path $env:USERPROFILE ".agents\skills\seed"
+if (Test-Path -LiteralPath $legacyLink) {
+  cmd /c rmdir "$legacyLink"
+}
 ```
 
 Restart the agent or open a new session.
@@ -69,7 +89,7 @@ If `opencode.json` contains other plugins, remove only the Seed entry:
 Also remove any pinned Seed entry such as:
 
 ```json
-"seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.2"
+"seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.3"
 ```
 
 ## Advanced CLI Uninstall

@@ -9,8 +9,8 @@ installing this skill.
 
 ## Codex-Compatible Native Skill Discovery
 
-Use this path when the active agent discovers skills from `~/.agents/skills`.
-Clone the repository and link the skill.
+Use this path when the active agent discovers skills from `$CODEX_HOME/skills`
+or `~/.codex/skills`. Clone the repository and link the skill.
 
 ## Prerequisites
 
@@ -18,22 +18,47 @@ Clone the repository and link the skill.
 
 ## Installation
 
-1. **Clone the Seed repository:**
+1. **Clone or update the Seed repository:**
    ```bash
-   git clone https://github.com/gaoguobin/seed-skills.git ~/.codex/seed-skills
+   codex_home="${CODEX_HOME:-$HOME/.codex}"
+   if [ -d "$codex_home/seed-skills/.git" ]; then
+     git -C "$codex_home/seed-skills" pull
+   else
+     git clone https://github.com/gaoguobin/seed-skills.git "$codex_home/seed-skills"
+   fi
    ```
 
 2. **Create the skill symlink:**
    ```bash
-   mkdir -p ~/.agents/skills
-   ln -s ~/.codex/seed-skills/skills/seed ~/.agents/skills/seed
+   codex_home="${CODEX_HOME:-$HOME/.codex}"
+   mkdir -p "$codex_home/skills"
+   [ -e "$codex_home/skills/seed" ] || ln -s "$codex_home/seed-skills/skills/seed" "$codex_home/skills/seed"
+   [ ! -e "$HOME/.agents/skills/seed" ] || rm -f "$HOME/.agents/skills/seed"
    ```
 
    **Windows (PowerShell):**
    ```powershell
-   git clone https://github.com/gaoguobin/seed-skills.git "$env:USERPROFILE\.codex\seed-skills"
-   New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.agents\skills"
-   cmd /c mklink /J "$env:USERPROFILE\.agents\skills\seed" "$env:USERPROFILE\.codex\seed-skills\skills\seed"
+   $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+   $repoDir = Join-Path $codexHome "seed-skills"
+   $skillsDir = Join-Path $codexHome "skills"
+   $linkPath = Join-Path $skillsDir "seed"
+   $targetPath = Join-Path $repoDir "skills\seed"
+
+   if (Test-Path -LiteralPath (Join-Path $repoDir ".git")) {
+     git -C $repoDir pull
+   } else {
+     git clone https://github.com/gaoguobin/seed-skills.git $repoDir
+   }
+
+   New-Item -ItemType Directory -Force -Path $skillsDir | Out-Null
+   if (-not (Test-Path -LiteralPath $linkPath)) {
+     cmd /c mklink /J "$linkPath" "$targetPath"
+   }
+
+   $legacyLink = Join-Path $env:USERPROFILE ".agents\skills\seed"
+   if (Test-Path -LiteralPath $legacyLink) {
+     cmd /c rmdir "$legacyLink"
+   }
    ```
 
 3. **Restart the agent** or open a new session so it discovers the skill.
@@ -52,7 +77,9 @@ Then install the plugin:
 /plugin install seed@seed-skills
 ```
 
-Run `/reload-plugins` or restart Claude Code after installation.
+These are Claude Code slash commands. The agent cannot run them from a shell;
+the user must run them in Claude Code. Run `/reload-plugins` or restart Claude
+Code after installation.
 
 ## Gemini CLI
 
@@ -89,13 +116,14 @@ npx skills add gaoguobin/seed-skills --list
 For native skill discovery:
 
 ```bash
-ls -la ~/.agents/skills/seed
+ls -la "${CODEX_HOME:-$HOME/.codex}/skills/seed"
 ```
 
 On Windows:
 
 ```powershell
-Get-Item "$env:USERPROFILE\.agents\skills\seed"
+$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+Get-Item (Join-Path $codexHome "skills\seed")
 ```
 
 Then ask the active agent:

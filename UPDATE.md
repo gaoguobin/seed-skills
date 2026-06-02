@@ -7,7 +7,11 @@ was installed.
 ## Codex-Compatible Native Skill Discovery
 
 ```bash
-cd ~/.codex/seed-skills && git pull
+codex_home="${CODEX_HOME:-$HOME/.codex}"
+git -C "$codex_home/seed-skills" pull
+mkdir -p "$codex_home/skills"
+[ -e "$codex_home/skills/seed" ] || ln -s "$codex_home/seed-skills/skills/seed" "$codex_home/skills/seed"
+[ ! -e "$HOME/.agents/skills/seed" ] || rm -f "$HOME/.agents/skills/seed"
 ```
 
 Skills update through the symlink. Restart the agent or open a new session if
@@ -16,7 +20,22 @@ the current session does not pick up changed skill files.
 **Windows (PowerShell):**
 
 ```powershell
-git -C "$env:USERPROFILE\.codex\seed-skills" pull
+$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+$repoDir = Join-Path $codexHome "seed-skills"
+$skillsDir = Join-Path $codexHome "skills"
+$linkPath = Join-Path $skillsDir "seed"
+$targetPath = Join-Path $repoDir "skills\seed"
+
+git -C $repoDir pull
+New-Item -ItemType Directory -Force -Path $skillsDir | Out-Null
+if (-not (Test-Path -LiteralPath $linkPath)) {
+  cmd /c mklink /J "$linkPath" "$targetPath"
+}
+
+$legacyLink = Join-Path $env:USERPROFILE ".agents\skills\seed"
+if (Test-Path -LiteralPath $legacyLink) {
+  cmd /c rmdir "$legacyLink"
+}
 ```
 
 ## Claude Code
@@ -43,7 +62,7 @@ If the user pinned a release tag in `opencode.json`, update that tag manually:
 
 ```json
 {
-  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.2"]
+  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.3"]
 }
 ```
 
