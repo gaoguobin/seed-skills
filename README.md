@@ -1,30 +1,41 @@
 # Seed Skill
 
-`seed` is a standalone skill for turning early, fuzzy ideas into a clear written
-spec. Use it when you want to brainstorm, clarify requirements, compare options,
-or shape a feature before implementation.
+Turn rough ideas into reviewed specs, then stop.
 
-Seed writes the final spec to:
-
-```text
-docs/seed/YYYY-MM-DD-<topic>-design.md
-```
-
-Then it stops. It does not call planning skills, write implementation code, or
-automatically continue into an implementation phase.
+`seed` is a standalone Agent Skill for brainstorming, requirement
+clarification, option comparison, and feature shaping before implementation. It
+writes the final spec to `docs/seed/YYYY-MM-DD-<topic>-design.md` and stops
+there: no planning skills, no implementation code.
 
 Seed does not require the full Superpowers workflow.
 
-## What It Is For
+## Install
 
-- Brainstorming and requirement clarification
-- Exploring product or technical options
-- Turning a vague request into a reviewed spec
-- Stopping at the spec boundary before coding starts
+Paste this into a coding agent that can fetch and follow remote instructions:
 
-## How to Use
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/gaoguobin/seed-skills/main/INSTALL.md
+```
 
-After installing the plugin/skill, ask your agent to use `seed` before coding:
+The installer covers Codex-compatible native skill discovery, Claude Code,
+Gemini CLI, OpenCode, and advanced CLI installs. This repository also includes
+manifests for Codex, Claude Code, Cursor, Gemini CLI, and OpenCode.
+
+## Update
+
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/gaoguobin/seed-skills/main/UPDATE.md
+```
+
+## Uninstall
+
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/gaoguobin/seed-skills/main/UNINSTALL.md
+```
+
+## Use It
+
+After installing, ask your agent:
 
 ```text
 Use seed to clarify this feature idea and turn it into a spec.
@@ -34,41 +45,18 @@ Use seed to clarify this feature idea and turn it into a spec.
 Let's use seed to compare a few approaches before implementation.
 ```
 
-## Install
+Seed is for:
 
-This repository is structured as a cross-agent skill/plugin package. The shared
-skill lives in `skills/seed/`; each agent gets a small native entrypoint.
-
-| Agent | Entrypoint |
-| --- | --- |
-| Codex | `.codex-plugin/plugin.json` |
-| Claude Code | `.claude-plugin/plugin.json` |
-| Cursor | `.cursor-plugin/plugin.json` |
-| Gemini CLI | `gemini-extension.json` + `GEMINI.md` |
-| OpenCode | `package.json` + `.opencode/plugins/seed.js` |
-
-Gemini CLI:
-
-```bash
-gemini extensions install https://github.com/gaoguobin/seed-skills
-```
-
-OpenCode:
-
-```json
-{
-  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git"]
-}
-```
-
-For Codex, Claude Code, and Cursor, install this repository through the
-corresponding plugin flow or marketplace source.
+- Brainstorming and requirement clarification
+- Product or technical option comparison
+- Turning a vague request into a reviewed spec
+- Stopping at the spec boundary before coding starts
 
 ## Visual Companion
 
 Seed includes an optional browser-based visual companion for mockups, diagrams,
-and visual comparisons. It is only used when seeing options is clearer than
-discussing them in text.
+and visual comparisons. It is only used when visuals make the discussion
+clearer than text alone.
 
 - macOS, Linux, WSL, and Git Bash use `skills/seed/scripts/start-server.sh`
 - Native Windows PowerShell uses `skills/seed/scripts/start-server.ps1`
@@ -80,9 +68,6 @@ provided.
 
 Before tagging a release, run the validation workflow or follow
 [docs/release-checklist.md](./docs/release-checklist.md).
-
-The current release process checks JSON manifests, skill frontmatter, Node
-syntax, shell launchers, PowerShell parser validity, and legacy-chain residue.
 
 ## Provenance
 

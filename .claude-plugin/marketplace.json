@@ -1,0 +1,18 @@
+{
+  "name": "seed-skills",
+  "description": "Marketplace for the Seed idea-shaping skill",
+  "owner": {
+    "name": "gaoguobin"
+  },
+  "plugins": [
+    {
+      "name": "seed",
+      "description": "Shape rough ideas into reviewed specs, then stop before implementation.",
+      "version": "0.1.1",
+      "source": "./",
+      "author": {
+        "name": "gaoguobin"
+      }
+    }
+  ]
+}

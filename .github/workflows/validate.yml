@@ -14,6 +14,7 @@ jobs:
         run: |
           jq empty \
             .claude-plugin/plugin.json \
+            .claude-plugin/marketplace.json \
             .codex-plugin/plugin.json \
             .cursor-plugin/plugin.json \
             gemini-extension.json \
@@ -38,6 +39,30 @@ jobs:
           ]
           if keys != ["name", "description"]:
               raise SystemExit(f"frontmatter keys must be name, description; got {keys}")
+          PY
+
+      - name: Validate versions
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest_paths = [
+              Path(".claude-plugin/plugin.json"),
+              Path(".codex-plugin/plugin.json"),
+              Path(".cursor-plugin/plugin.json"),
+              Path("gemini-extension.json"),
+              Path("package.json"),
+          ]
+          versions = {
+              str(path): json.loads(path.read_text(encoding="utf-8"))["version"]
+              for path in manifest_paths
+          }
+          marketplace = json.loads(Path(".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
+          versions[".claude-plugin/marketplace.json"] = marketplace["plugins"][0]["version"]
+
+          if len(set(versions.values())) != 1:
+              raise SystemExit(f"version mismatch: {versions}")
           PY
 
       - name: Check scripts

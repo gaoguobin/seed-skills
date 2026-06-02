@@ -27,3 +27,11 @@ use skill tool to load seed
 OpenCode installs git-backed plugins through its package manager. If updates do
 not appear after restart, clear OpenCode's package cache or reinstall the
 plugin.
+
+To pin a specific release:
+
+```json
+{
+  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.1"]
+}
+```

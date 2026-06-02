@@ -4,8 +4,9 @@ Use this before tagging or publishing a Seed release.
 
 ## Local Validation
 
-- [ ] `jq empty .claude-plugin/plugin.json .codex-plugin/plugin.json .cursor-plugin/plugin.json gemini-extension.json package.json`
+- [ ] `jq empty .claude-plugin/plugin.json .claude-plugin/marketplace.json .codex-plugin/plugin.json .cursor-plugin/plugin.json gemini-extension.json package.json`
 - [ ] `python3` frontmatter check confirms `skills/seed/SKILL.md` only has `name` and `description`
+- [ ] Manifest and marketplace versions are consistent
 - [ ] `node --check .opencode/plugins/seed.js`
 - [ ] `node --check skills/seed/scripts/server.cjs`
 - [ ] `node --check skills/seed/scripts/helper.js`
@@ -29,4 +30,4 @@ Use this before tagging or publishing a Seed release.
 - [ ] Version is consistent in all manifests
 - [ ] README install notes match the release target
 - [ ] `LICENSE` attribution is current
-- [ ] Create and push a signed-off release tag, for example `v0.1.1`
+- [ ] Create and push a signed-off release tag, for example `vX.Y.Z`
