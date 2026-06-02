@@ -22,6 +22,14 @@ function Test-ProcessAlive {
   $null -ne (Get-Process -Id $ProcessId -ErrorAction SilentlyContinue)
 }
 
+function Get-LogTail {
+  param([string]$Path)
+  if (-not (Test-Path $Path)) {
+    return ""
+  }
+  return ((Get-Content -Path $Path -Tail 20 -ErrorAction SilentlyContinue) -join "`n")
+}
+
 function Get-OwnerPid {
   try {
     $process = Get-CimInstance Win32_Process -Filter "ProcessId = $PID" -ErrorAction Stop
@@ -127,7 +135,7 @@ try {
 
   Set-Content -Path $pidFile -Value $process.Id -Encoding ascii
 
-  for ($i = 0; $i -lt 50; $i++) {
+  for ($i = 0; $i -lt 150; $i++) {
     if ((Test-Path $logFile) -and (Select-String -Path $logFile -Pattern "server-started" -Quiet)) {
       $alive = $true
       for ($j = 0; $j -lt 20; $j++) {
@@ -150,7 +158,13 @@ try {
     Start-Sleep -Milliseconds 100
   }
 
-  Write-JsonLine @{ error = "Server failed to start within 5 seconds" }
+  $alive = Test-ProcessAlive $process.Id
+  Write-JsonLine @{
+    error = "Server failed to start within 15 seconds"
+    process_alive = $alive
+    stdout_tail = Get-LogTail $logFile
+    stderr_tail = Get-LogTail $errFile
+  }
   exit 1
 } finally {
   Restore-SeedEnvironment $previousEnv
