@@ -1,7 +1,7 @@
 {
   "name": "seed",
   "description": "Standalone idea-shaping skill that turns rough concepts into reviewed specs and stops before implementation.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "gaoguobin"
   },

@@ -12,6 +12,7 @@ Use this before tagging or publishing a Seed release.
 - [ ] `bash -n skills/seed/scripts/start-server.sh`
 - [ ] `bash -n skills/seed/scripts/stop-server.sh`
 - [ ] PowerShell parser check passes for `skills/seed/scripts/start-server.ps1` and `skills/seed/scripts/stop-server.ps1`
+- [ ] GitHub Actions Windows smoke starts and stops `start-server.ps1`
 - [ ] legacy-chain residue search is clean
 - [ ] byte-level legacy-name scan is clean, with only README provenance allowed
 
@@ -28,4 +29,4 @@ Use this before tagging or publishing a Seed release.
 - [ ] Version is consistent in all manifests
 - [ ] README install notes match the release target
 - [ ] `LICENSE` attribution is current
-- [ ] Create and push a signed-off release tag, for example `v0.1.0`
+- [ ] Create and push a signed-off release tag, for example `v0.1.1`

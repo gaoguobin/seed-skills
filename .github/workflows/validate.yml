@@ -8,7 +8,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Validate JSON
         run: |
@@ -97,3 +97,44 @@ jobs:
           if hits:
               raise SystemExit("\n".join(hits))
           PY
+
+  windows-smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Smoke test PowerShell visual companion
+        shell: pwsh
+        run: |
+          $projectDir = Join-Path $env:RUNNER_TEMP "seed-visual-smoke"
+          New-Item -ItemType Directory -Force -Path $projectDir | Out-Null
+
+          $sessionDir = $null
+          try {
+            $json = .\skills\seed\scripts\start-server.ps1 -ProjectDir $projectDir
+            $info = $json | ConvertFrom-Json
+            if ($info.state_dir) {
+              $sessionDir = Split-Path -Parent $info.state_dir
+            }
+            if ($info.type -ne "server-started") {
+              throw "Unexpected start response: $json"
+            }
+
+            $serverInfo = Join-Path $info.state_dir "server-info"
+            if (-not (Test-Path $serverInfo)) {
+              throw "Missing server-info file: $serverInfo"
+            }
+
+            $response = Invoke-WebRequest -Uri $info.url -UseBasicParsing -TimeoutSec 10
+            if ($response.StatusCode -ne 200) {
+              throw "Unexpected HTTP status: $($response.StatusCode)"
+            }
+          } finally {
+            if ($sessionDir) {
+              $stopJson = .\skills\seed\scripts\stop-server.ps1 $sessionDir
+              $stop = $stopJson | ConvertFrom-Json
+              if ($stop.status -ne "stopped") {
+                throw "Unexpected stop response: $stopJson"
+              }
+            }
+          }
