@@ -1,63 +1,59 @@
-# seed-skills
+# Seed Skill
 
-Standalone skill repository. This repository currently ships one skill:
+`seed` is a standalone skill for turning early, fuzzy ideas into a clear written
+spec. Use it when you want to brainstorm, clarify requirements, compare options,
+or shape a feature before implementation.
 
-## `seed`
-
-`seed` turns a vague idea into a reviewed spec document, then stops. It is for
-early discussion, requirement clarification, option comparison, and shaping a
-clear written spec before any implementation work starts.
-
-The skill writes specs to:
+Seed writes the final spec to:
 
 ```text
 docs/seed/YYYY-MM-DD-<topic>-design.md
 ```
 
-It does not call another skill, generate implementation code, or automatically
-continue into implementation planning. Once the user approves the written spec,
-it reports the spec path and stops.
+Then it stops. It does not call planning skills, write implementation code, or
+automatically continue into an implementation phase.
 
-## Agent Compatibility
+Seed does not require the full Superpowers workflow.
 
-Seed follows the same broad compatibility shape as Superpowers: one shared
-`skills/` directory plus small harness-specific entrypoints.
+## What It Is For
 
-### Codex
+- Brainstorming and requirement clarification
+- Exploring product or technical options
+- Turning a vague request into a reviewed spec
+- Stopping at the spec boundary before coding starts
 
-Codex metadata lives in `.codex-plugin/plugin.json` and points at `./skills/`.
-Install it through a Codex plugin marketplace entry that references this
-repository. The plugin root is this repository root.
+## How to Use
 
-### Claude Code
+After installing the plugin/skill, ask your agent to use `seed` before coding:
 
-Claude Code metadata lives in `.claude-plugin/plugin.json`. The skill itself
-remains in `skills/seed/`.
-Install it through Claude Code's plugin flow once this repository is added to a
-marketplace or local plugin source.
+```text
+Use seed to clarify this feature idea and turn it into a spec.
+```
 
-### Cursor
+```text
+Let's use seed to compare a few approaches before implementation.
+```
 
-Cursor metadata lives in `.cursor-plugin/plugin.json` and points at `./skills/`.
-Install it through Cursor's plugin flow once this repository is available as a
-plugin source.
+## Install
 
-### Gemini CLI
+This repository is structured as a cross-agent skill/plugin package. The shared
+skill lives in `skills/seed/`; each agent gets a small native entrypoint.
 
-Gemini metadata lives in `gemini-extension.json`, which loads `GEMINI.md`.
-`GEMINI.md` includes the seed skill directly.
+| Agent | Entrypoint |
+| --- | --- |
+| Codex | `.codex-plugin/plugin.json` |
+| Claude Code | `.claude-plugin/plugin.json` |
+| Cursor | `.cursor-plugin/plugin.json` |
+| Gemini CLI | `gemini-extension.json` + `GEMINI.md` |
+| OpenCode | `package.json` + `.opencode/plugins/seed.js` |
+
+Gemini CLI:
 
 ```bash
 gemini extensions install https://github.com/gaoguobin/seed-skills
 ```
 
-### OpenCode
-
-OpenCode uses `package.json` with `.opencode/plugins/seed.js` as the plugin
-entrypoint. The plugin registers `skills/` and injects a short session hint so
-OpenCode can load `seed` through its native skill tool.
-
-See `.opencode/INSTALL.md` for OpenCode installation details.
+OpenCode:
 
 ```json
 {
@@ -65,38 +61,28 @@ See `.opencode/INSTALL.md` for OpenCode installation details.
 }
 ```
 
-## Release Validation
+For Codex, Claude Code, and Cursor, install this repository through the
+corresponding plugin flow or marketplace source.
 
-Run the GitHub Actions workflow or follow [docs/release-checklist.md](./docs/release-checklist.md)
-before tagging a release.
+## Visual Companion
 
-## Files
+Seed includes an optional browser-based visual companion for mockups, diagrams,
+and visual comparisons. It is only used when seeing options is clearer than
+discussing them in text.
 
-```text
-.claude-plugin/plugin.json
-.codex-plugin/plugin.json
-.cursor-plugin/plugin.json
-.opencode/INSTALL.md
-.opencode/plugins/seed.js
-GEMINI.md
-gemini-extension.json
-package.json
-skills/seed/SKILL.md
-skills/seed/visual-companion.md
-skills/seed/spec-document-reviewer-prompt.md
-skills/seed/scripts/server.cjs
-skills/seed/scripts/start-server.sh
-skills/seed/scripts/start-server.ps1
-skills/seed/scripts/stop-server.sh
-skills/seed/scripts/stop-server.ps1
-skills/seed/scripts/helper.js
-skills/seed/scripts/frame-template.html
-```
+- macOS, Linux, WSL, and Git Bash use `skills/seed/scripts/start-server.sh`
+- Native Windows PowerShell uses `skills/seed/scripts/start-server.ps1`
 
-The visual companion is retained for discussions that benefit from mockups,
-diagrams, or visual comparisons. Its project-local session files live under
-`.seed/visual/`. POSIX shells use `start-server.sh` / `stop-server.sh`;
-native Windows PowerShell uses `start-server.ps1` / `stop-server.ps1`.
+Session files are written under `.seed/visual/` when a project directory is
+provided.
+
+## Development
+
+Before tagging a release, run the validation workflow or follow
+[docs/release-checklist.md](./docs/release-checklist.md).
+
+The current release process checks JSON manifests, skill frontmatter, Node
+syntax, shell launchers, PowerShell parser validity, and legacy-chain residue.
 
 ## Provenance
 
