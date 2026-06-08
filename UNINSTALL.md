@@ -8,7 +8,7 @@ installed.
 Remove the skill link:
 
 ```bash
-rm -f "${CODEX_HOME:-$HOME/.codex}/skills/seed"
+rm -f "$HOME/.agents/skills/seed"
 ```
 
 Optionally delete the clone:
@@ -17,17 +17,18 @@ Optionally delete the clone:
 rm -rf "${CODEX_HOME:-$HOME/.codex}/seed-skills"
 ```
 
-If you installed Seed from v0.1.2, also remove the legacy link if it exists:
+If you installed Seed from v0.1.3, also remove the legacy Codex link if it
+exists:
 
 ```bash
-[ ! -e "$HOME/.agents/skills/seed" ] || rm -f "$HOME/.agents/skills/seed"
+codex_home="${CODEX_HOME:-$HOME/.codex}"
+[ ! -L "$codex_home/skills/seed" ] || rm -f "$codex_home/skills/seed"
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
-$linkPath = Join-Path $codexHome "skills\seed"
+$linkPath = Join-Path $env:USERPROFILE ".agents\skills\seed"
 if (Test-Path -LiteralPath $linkPath) {
   cmd /c rmdir "$linkPath"
 }
@@ -40,12 +41,17 @@ $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USER
 Remove-Item -Recurse -Force (Join-Path $codexHome "seed-skills")
 ```
 
-If you installed Seed from v0.1.2, also remove the legacy link if it exists:
+If you installed Seed from v0.1.3, also remove the legacy Codex link if it
+exists:
 
 ```powershell
-$legacyLink = Join-Path $env:USERPROFILE ".agents\skills\seed"
-if (Test-Path -LiteralPath $legacyLink) {
-  cmd /c rmdir "$legacyLink"
+$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+$legacyCodexLink = Join-Path $codexHome "skills\seed"
+if (Test-Path -LiteralPath $legacyCodexLink) {
+  $legacyItem = Get-Item -LiteralPath $legacyCodexLink -Force
+  if ($legacyItem.LinkType -eq "Junction" -or $legacyItem.LinkType -eq "SymbolicLink") {
+    cmd /c rmdir "$legacyCodexLink"
+  }
 }
 ```
 
@@ -89,7 +95,7 @@ If `opencode.json` contains other plugins, remove only the Seed entry:
 Also remove any pinned Seed entry such as:
 
 ```json
-"seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.3"
+"seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.4"
 ```
 
 ## Advanced CLI Uninstall

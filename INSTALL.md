@@ -9,8 +9,9 @@ installing this skill.
 
 ## Codex-Compatible Native Skill Discovery
 
-Use this path when the active agent discovers skills from `$CODEX_HOME/skills`
-or `~/.codex/skills`. Clone the repository and link the skill.
+Use this path when the active agent discovers user skills from
+`$HOME/.agents/skills`. Clone the repository under `$CODEX_HOME` or
+`~/.codex`, then link the skill into the user skills directory.
 
 ## Prerequisites
 
@@ -31,16 +32,17 @@ or `~/.codex/skills`. Clone the repository and link the skill.
 2. **Create the skill symlink:**
    ```bash
    codex_home="${CODEX_HOME:-$HOME/.codex}"
-   mkdir -p "$codex_home/skills"
-   [ -e "$codex_home/skills/seed" ] || ln -s "$codex_home/seed-skills/skills/seed" "$codex_home/skills/seed"
-   [ ! -e "$HOME/.agents/skills/seed" ] || rm -f "$HOME/.agents/skills/seed"
+   user_skills="$HOME/.agents/skills"
+   mkdir -p "$user_skills"
+   [ -e "$user_skills/seed" ] || ln -s "$codex_home/seed-skills/skills/seed" "$user_skills/seed"
+   [ ! -L "$codex_home/skills/seed" ] || rm -f "$codex_home/skills/seed"
    ```
 
    **Windows (PowerShell):**
    ```powershell
    $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
    $repoDir = Join-Path $codexHome "seed-skills"
-   $skillsDir = Join-Path $codexHome "skills"
+   $skillsDir = Join-Path $env:USERPROFILE ".agents\skills"
    $linkPath = Join-Path $skillsDir "seed"
    $targetPath = Join-Path $repoDir "skills\seed"
 
@@ -55,9 +57,12 @@ or `~/.codex/skills`. Clone the repository and link the skill.
      cmd /c mklink /J "$linkPath" "$targetPath"
    }
 
-   $legacyLink = Join-Path $env:USERPROFILE ".agents\skills\seed"
-   if (Test-Path -LiteralPath $legacyLink) {
-     cmd /c rmdir "$legacyLink"
+   $legacyCodexLink = Join-Path $codexHome "skills\seed"
+   if (Test-Path -LiteralPath $legacyCodexLink) {
+     $legacyItem = Get-Item -LiteralPath $legacyCodexLink -Force
+     if ($legacyItem.LinkType -eq "Junction" -or $legacyItem.LinkType -eq "SymbolicLink") {
+       cmd /c rmdir "$legacyCodexLink"
+     }
    }
    ```
 
@@ -116,14 +121,13 @@ npx skills add gaoguobin/seed-skills --list
 For native skill discovery:
 
 ```bash
-ls -la "${CODEX_HOME:-$HOME/.codex}/skills/seed"
+ls -la "$HOME/.agents/skills/seed"
 ```
 
 On Windows:
 
 ```powershell
-$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
-Get-Item (Join-Path $codexHome "skills\seed")
+Get-Item "$env:USERPROFILE\.agents\skills\seed"
 ```
 
 Then ask the active agent:

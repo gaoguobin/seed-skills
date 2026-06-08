@@ -8,7 +8,7 @@
     {
       "name": "seed",
       "description": "Shape rough ideas into reviewed specs, then stop before implementation.",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "source": "./",
       "author": {
         "name": "gaoguobin"

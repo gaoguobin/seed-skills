@@ -9,9 +9,10 @@ was installed.
 ```bash
 codex_home="${CODEX_HOME:-$HOME/.codex}"
 git -C "$codex_home/seed-skills" pull
-mkdir -p "$codex_home/skills"
-[ -e "$codex_home/skills/seed" ] || ln -s "$codex_home/seed-skills/skills/seed" "$codex_home/skills/seed"
-[ ! -e "$HOME/.agents/skills/seed" ] || rm -f "$HOME/.agents/skills/seed"
+user_skills="$HOME/.agents/skills"
+mkdir -p "$user_skills"
+[ -e "$user_skills/seed" ] || ln -s "$codex_home/seed-skills/skills/seed" "$user_skills/seed"
+[ ! -L "$codex_home/skills/seed" ] || rm -f "$codex_home/skills/seed"
 ```
 
 Skills update through the symlink. Restart the agent or open a new session if
@@ -22,7 +23,7 @@ the current session does not pick up changed skill files.
 ```powershell
 $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
 $repoDir = Join-Path $codexHome "seed-skills"
-$skillsDir = Join-Path $codexHome "skills"
+$skillsDir = Join-Path $env:USERPROFILE ".agents\skills"
 $linkPath = Join-Path $skillsDir "seed"
 $targetPath = Join-Path $repoDir "skills\seed"
 
@@ -32,9 +33,12 @@ if (-not (Test-Path -LiteralPath $linkPath)) {
   cmd /c mklink /J "$linkPath" "$targetPath"
 }
 
-$legacyLink = Join-Path $env:USERPROFILE ".agents\skills\seed"
-if (Test-Path -LiteralPath $legacyLink) {
-  cmd /c rmdir "$legacyLink"
+$legacyCodexLink = Join-Path $codexHome "skills\seed"
+if (Test-Path -LiteralPath $legacyCodexLink) {
+  $legacyItem = Get-Item -LiteralPath $legacyCodexLink -Force
+  if ($legacyItem.LinkType -eq "Junction" -or $legacyItem.LinkType -eq "SymbolicLink") {
+    cmd /c rmdir "$legacyCodexLink"
+  }
 }
 ```
 
@@ -62,7 +66,7 @@ If the user pinned a release tag in `opencode.json`, update that tag manually:
 
 ```json
 {
-  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.3"]
+  "plugin": ["seed@git+https://github.com/gaoguobin/seed-skills.git#v0.1.4"]
 }
 ```
 

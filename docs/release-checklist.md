@@ -14,6 +14,7 @@ Use this before tagging or publishing a Seed release.
 - [ ] `bash -n skills/seed/scripts/stop-server.sh`
 - [ ] PowerShell parser check passes for `skills/seed/scripts/start-server.ps1` and `skills/seed/scripts/stop-server.ps1`
 - [ ] GitHub Actions Windows smoke starts and stops `start-server.ps1`
+- [ ] Codex native install docs create `$HOME/.agents/skills/seed` and remove only legacy link/junction installs under `$CODEX_HOME/skills/seed`
 - [ ] legacy-chain residue search is clean
 - [ ] byte-level legacy-name scan is clean, with only README provenance allowed
 
